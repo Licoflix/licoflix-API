@@ -18,6 +18,7 @@ public class FilmResponse {
     private String title;
     private String image;
     private Integer oscars;
+    private String language;
     private String duration;
     private String producers;
     private String directors;
@@ -30,17 +31,6 @@ public class FilmResponse {
 
     @Override
     public String toString() {
-        return " FilmResponse = {" +
-                " age: " + age +
-                ", year: " + year +
-                ", oscars: " + oscars +
-                ", bafta awards: " + baftaAwards +
-                ", title: " + title + '\'' +
-                ", duration: " + duration + '\'' +
-                ", description: " + description + '\'' +
-                ", categories: " + categories +
-                ", image=" + image.substring(0, 10) + "... " +
-                ", background=" + background.substring(0, 10) + "... " +
-                '}';
+        return " FilmResponse = {" + " title: " + title + '}';
     }
 }

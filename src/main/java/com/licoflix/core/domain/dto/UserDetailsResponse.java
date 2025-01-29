@@ -25,12 +25,7 @@ public class UserDetailsResponse {
         return "Id: " + id + ", " +
                 "Email: " + email + ", " +
                 "Nickname: " + nickname + ", " +
-                "Token: " + token + ", " +
                 "Authenticated: " + authenticated + ", " +
-                "CreatedIn: " + createdIn + ", " +
-                "ChangedIn: " + changedIn + ", " +
-                "CreatedBy: " + createdBy + ", " +
-                "ChangedBy: " + changedBy + ", " +
                 "Deleted: " + deleted;
     }
 }
