@@ -27,6 +27,9 @@ public class FilmRequest {
     @NotNull(message = "Film title is required")
     private String title;
 
+    @NotNull(message = "Film language is required")
+    private String language;
+
     @NotNull(message = "Film cast is required")
     private String cast;
 
