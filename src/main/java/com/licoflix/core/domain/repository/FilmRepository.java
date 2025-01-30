@@ -27,9 +27,6 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 
     Optional<Film> getByTitleAndYear(String title, int year);
 
-    @Query("SELECT c.name AS categoryName, f AS film " +
-            "FROM Film f JOIN f.categories c " +
-            "WHERE c IN :categories " +
-            "ORDER BY c.name, f.id")
-    List<Object[]> findFilmsGroupedByCategory(@Param("categories") List<Category> categories);
+    @Query("SELECT c.name, f FROM Film f JOIN f.categories c")
+    List<Object[]> findFilmsWithCategories();
 }

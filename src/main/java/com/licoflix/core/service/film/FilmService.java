@@ -25,7 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,10 +62,16 @@ public class FilmService implements IFilmService {
     public DataListResponse<FilmGroupedByCategoryResponse> listByCategories() {
         DataListResponse<FilmGroupedByCategoryResponse> response = new DataListResponse<>();
 
-        List<Category> categories = categoryRepository.findAll();
-        List<Object[]> filmsGroupedData = filmRepository.findFilmsGroupedByCategory(categories);
+        List<Object[]> filmsGroupedData = filmRepository.findFilmsWithCategories();
 
-        List<FilmGroupedByCategoryResponse> groupedFilms = FilmMapper.filmGroupedByCategoryListFromObjectList(filmsGroupedData);
+        Map<String, List<FilmResponse>> groupedFilmsMap = filmsGroupedData.stream()
+                .collect(Collectors.groupingBy(
+                        row -> (String) row[0],
+                        Collectors.mapping(row -> FilmMapper.entityToDTO((Film) row[1]), Collectors.toList())));
+
+        List<FilmGroupedByCategoryResponse> groupedFilms = groupedFilmsMap.entrySet().stream()
+                .map(entry -> new FilmGroupedByCategoryResponse(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
 
         response.setTotalPages(1);
         response.setData(groupedFilms);
@@ -71,6 +79,7 @@ public class FilmService implements IFilmService {
 
         return response;
     }
+
 
     @Override
     public DataListResponse<CategoryResponse> listCategories() {
