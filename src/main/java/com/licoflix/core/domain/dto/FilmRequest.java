@@ -57,4 +57,6 @@ public class FilmRequest {
     private MultipartFile film;
 
     private MultipartFile subtitle;
+
+    private MultipartFile subtitleEn;
 }

@@ -179,7 +179,7 @@ public class FilmService implements IFilmService {
     }
 
     private void saveFilmFiles(FilmRequest request) throws IOException {
-        if (request.getFilm() != null || request.getSubtitle() != null) {
+        if (request.getFilm() != null || request.getSubtitle() != null || request.getSubtitleEn() != null) {
             String baseDir = "film/";
 
             Path basePath = Path.of(baseDir);
@@ -209,10 +209,21 @@ public class FilmService implements IFilmService {
                 Path subtitlePath = filmTitleDir.resolve(request.getTitle() + " ptbr.vtt");
                 try (var subtitleInputStream = request.getSubtitle().getInputStream()) {
                     Files.copy(subtitleInputStream, subtitlePath, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Subtitle for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
+                    logger.info("Subtitle-ptbr for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
                 } catch (IOException e) {
-                    logger.error("Failed to save subtitle for film '{}' at {}: {}", request.getTitle(), subtitlePath.toAbsolutePath(), e.getMessage());
-                    throw new IOException("Error saving subtitle file", e);
+                    logger.error("Failed to save subtitle-ptbr for film '{}' at {}: {}", request.getTitle(), subtitlePath.toAbsolutePath(), e.getMessage());
+                    throw new IOException("Error saving subtitle-ptbr file", e);
+                }
+            }
+
+            if (request.getSubtitleEn() != null) {
+                Path subtitlePath = filmTitleDir.resolve(request.getTitle() + " en.vtt");
+                try (var subtitleInputStream = request.getSubtitleEn().getInputStream()) {
+                    Files.copy(subtitleInputStream, subtitlePath, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Subtitle-en for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
+                } catch (IOException e) {
+                    logger.error("Failed to save subtitle-en for film '{}' at {}: {}", request.getTitle(), subtitlePath.toAbsolutePath(), e.getMessage());
+                    throw new IOException("Error saving subtitle-en file", e);
                 }
             }
         }
