@@ -194,20 +194,20 @@ public class FilmService implements IFilmService {
             Path basePath = Path.of(baseDir);
             if (Files.notExists(basePath)) {
                 Files.createDirectories(basePath);
-                logger.info("Base directory created: {}", basePath.toAbsolutePath());
+                logger.debug("Base directory created: {}", basePath.toAbsolutePath());
             }
 
             Path filmTitleDir = basePath.resolve(request.getTitle());
             if (Files.notExists(filmTitleDir)) {
                 Files.createDirectories(filmTitleDir);
-                logger.info("Directory for movie '{}' created: {}", request.getTitle(), filmTitleDir.toAbsolutePath());
+                logger.debug("Directory for movie '{}' created: {}", request.getTitle(), filmTitleDir.toAbsolutePath());
             }
 
             Path filmPath = filmTitleDir.resolve(request.getTitle() + ".mp4");
             if (request.getFilm() != null) {
                 try (var inputStream = request.getFilm().getInputStream()) {
                     Files.copy(inputStream, filmPath, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Film '{}' saved at {}", request.getTitle(), filmPath.toAbsolutePath());
+                    logger.debug("Film '{}' saved at {}", request.getTitle(), filmPath.toAbsolutePath());
                 } catch (IOException e) {
                     logger.error("Failed to save film '{}' at {}: {}", request.getTitle(), filmPath.toAbsolutePath(), e.getMessage());
                     throw new IOException("Error saving film file", e);
@@ -218,7 +218,7 @@ public class FilmService implements IFilmService {
                 Path subtitlePath = filmTitleDir.resolve(request.getTitle() + " ptbr.vtt");
                 try (var subtitleInputStream = request.getSubtitle().getInputStream()) {
                     Files.copy(subtitleInputStream, subtitlePath, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Subtitle-ptbr for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
+                    logger.debug("Subtitle-ptbr for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
                 } catch (IOException e) {
                     logger.error("Failed to save subtitle-ptbr for film '{}' at {}: {}", request.getTitle(), subtitlePath.toAbsolutePath(), e.getMessage());
                     throw new IOException("Error saving subtitle-ptbr file", e);
@@ -229,7 +229,7 @@ public class FilmService implements IFilmService {
                 Path subtitlePath = filmTitleDir.resolve(request.getTitle() + " en.vtt");
                 try (var subtitleInputStream = request.getSubtitleEn().getInputStream()) {
                     Files.copy(subtitleInputStream, subtitlePath, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Subtitle-en for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
+                    logger.debug("Subtitle-en for '{}' saved at {}", request.getTitle(), subtitlePath.toAbsolutePath());
                 } catch (IOException e) {
                     logger.error("Failed to save subtitle-en for film '{}' at {}: {}", request.getTitle(), subtitlePath.toAbsolutePath(), e.getMessage());
                     throw new IOException("Error saving subtitle-en file", e);
@@ -258,29 +258,29 @@ public class FilmService implements IFilmService {
         if (Files.exists(filmPath)) {
             try {
                 Files.delete(filmPath);
-                logger.info("Film '{}' deleted at {}", title, filmPath.toAbsolutePath());
+                logger.debug("Film '{}' deleted at {}", title, filmPath.toAbsolutePath());
             } catch (IOException e) {
                 logger.error("Failed to delete film '{}' at {}: {}", title, filmPath.toAbsolutePath(), e.getMessage());
             }
         } else {
-            logger.info("No film file found for '{}'", title);
+            logger.debug("No film file found for '{}'", title);
         }
 
         Path subtitlePath = filmTitleDir.resolve(title + " ptbr.vtt");
         if (Files.exists(subtitlePath)) {
             try {
                 Files.delete(subtitlePath);
-                logger.info("Subtitle for '{}' deleted at {}", title, subtitlePath.toAbsolutePath());
+                logger.debug("Subtitle for '{}' deleted at {}", title, subtitlePath.toAbsolutePath());
             } catch (IOException e) {
                 logger.error("Failed to delete subtitle for film '{}' at {}: {}", title, subtitlePath.toAbsolutePath(), e.getMessage());
             }
         } else {
-            logger.info("No subtitle file found for '{}'", title);
+            logger.debug("No subtitle file found for '{}'", title);
         }
 
         try {
             Files.delete(filmTitleDir);
-            logger.info("Directory for film '{}' deleted: {}", title, filmTitleDir.toAbsolutePath());
+            logger.debug("Directory for film '{}' deleted: {}", title, filmTitleDir.toAbsolutePath());
         } catch (IOException e) {
             logger.error("Failed to delete directory for film '{}' at {}: {}", title, filmTitleDir.toAbsolutePath(), e.getMessage());
         }
