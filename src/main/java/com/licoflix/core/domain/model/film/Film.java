@@ -44,24 +44,24 @@ public class Film extends AuditFields {
     private String duration;
 
     @Lob
-    @Column(name = "description", nullable = false, columnDefinition = "LONGBLOB")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Lob
-    @Column(name = "image", nullable = false, columnDefinition = "LONGBLOB")
+    @Column(name = "image", nullable = false)
     private byte[] image;
 
     @Lob
-    @Column(name = "background", nullable = false, columnDefinition = "LONGBLOB")
+    @Column(name = "background", nullable = false)
     private byte[] background;
 
-    @Column(name = "directors", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "directors", nullable = false, columnDefinition= "varchar")
     private String directors;
 
-    @Column(name = "producers", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "producers", nullable = false, columnDefinition= "varchar")
     private String producers;
 
-    @Column(name = "film_cast", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "film_cast", nullable = false, columnDefinition= "varchar")
     private String cast;
 
     @ManyToMany(fetch = FetchType.LAZY)
