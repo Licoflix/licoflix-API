@@ -52,7 +52,6 @@ public class FilmController {
         DataListResponse<FilmResponse> response = service.list(search, category, page, pageSize);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
-        logger.debug("List method, Response: {}", response.getData());
         logger.info("List method" + FINISHED);
         return response;
     }
@@ -65,7 +64,6 @@ public class FilmController {
         DataListResponse<FilmGroupedByCategoryResponse> response = service.listByCategories();
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
-        logger.debug("List Films Grouped by Categories method, Response: {}", response.getData());
         logger.info("List Films Grouped by Categories method" + FINISHED);
         return response;
     }
@@ -78,7 +76,6 @@ public class FilmController {
         DataResponse<FilmResponse> response = service.get(id);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
-        logger.debug("Get method, Response: {}", response.getData());
         logger.info("Get method" + FINISHED);
         return response;
     }
@@ -101,7 +98,6 @@ public class FilmController {
         DataListResponse<CategoryResponse> response = service.listCategories();
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
-        logger.debug("List Categories method, Response: {}", response.getData());
         logger.info("List Categories method" + FINISHED);
         return response;
     }
@@ -119,7 +115,6 @@ public class FilmController {
         DataResponse<FilmResponse> response = service.save(filmRequest, authorization, timezone);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
-        logger.debug("Create method, Response: {}", response.getData());
         logger.info("Create method" + FINISHED);
         return response;
     }
@@ -133,7 +128,6 @@ public class FilmController {
         logger.info("Add film in list method" + STARTED);
         DataResponse<FilmResponse> response = service.addFilmInList(id, authorization, timezone);
 
-        logger.debug("Add film in list method, Response: {}", response.getData());
         logger.info("Add film in list method" + FINISHED);
         return response;
     }
@@ -146,7 +140,6 @@ public class FilmController {
         logger.info("Get Film User List method" + STARTED);
         DataListResponse<FilmResponse> response = service.geFilmUserList(authorization, timezone);
 
-        logger.debug("Get Film User List method, Response: {}", response.getData());
         logger.info("Get Film User List method" + FINISHED);
         return response;
     }
