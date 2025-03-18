@@ -1,6 +1,5 @@
 package com.licoflix.core.mapper;
 
-import com.licoflix.core.domain.dto.FilmGroupedByCategoryResponse;
 import com.licoflix.core.domain.dto.FilmRequest;
 import com.licoflix.core.domain.dto.FilmResponse;
 import com.licoflix.core.domain.model.film.Category;
@@ -10,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class FilmMapper {
@@ -39,6 +40,7 @@ public class FilmMapper {
                 .directors(film.getDirectors())
                 .description(film.getDescription())
                 .baftaAwards(film.getBaftaAwards())
+                .goldenGlobes(film.getGoldenGlobes())
                 .image(film.getImage() != null ? Base64.getEncoder().encodeToString(film.getImage()) : "")
                 .background(film.getBackground() != null ? Base64.getEncoder().encodeToString(film.getBackground()) : "")
                 .categories(new ArrayList<>(film.getCategories().stream().map(Category::getName).collect(Collectors.toSet())))
@@ -71,6 +73,7 @@ public class FilmMapper {
                 .producers(filmRequest.getProducers())
                 .baftaAwards(filmRequest.getBaftaAwards())
                 .description(filmRequest.getDescription())
+                .goldenGlobes(filmRequest.getGoldenGlobes())
                 .build();
 
         film.setCreatedBy(id);
@@ -81,26 +84,5 @@ public class FilmMapper {
         film.setId(id);
         film.setCreatedBy(user);
         film.setChangedIn(LocalDateTime.now());
-    }
-
-    public static List<FilmGroupedByCategoryResponse> filmGroupedByCategoryListFromObjectList(List<Object[]> filmsGroupedData) {
-        Map<String, List<FilmResponse>> groupedFilmsMap = new HashMap<>();
-        for (Object[] row : filmsGroupedData) {
-            String categoryName = (String) row[0];
-            Film film = (Film) row[1];
-
-            groupedFilmsMap
-                    .computeIfAbsent(categoryName, k -> new ArrayList<>())
-                    .add(FilmMapper.entityToDTO(film));
-        }
-
-        return groupedFilmsMap.entrySet().stream()
-                .map(entry -> {
-                    FilmGroupedByCategoryResponse groupedResponse = new FilmGroupedByCategoryResponse();
-                    groupedResponse.setCategory(entry.getKey());
-                    groupedResponse.setFilms(entry.getValue());
-                    return groupedResponse;
-                })
-                .toList();
     }
 }
