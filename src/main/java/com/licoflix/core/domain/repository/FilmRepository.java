@@ -17,12 +17,12 @@ import java.util.Optional;
 public interface FilmRepository extends JpaRepository<Film, Long> {
     Page<Film> findAll(Specification<Film> filmSpecification, Pageable pageable);
 
-    @Query(value = "SELECT f.title, GROUP_CONCAT(c.name SEPARATOR ', ') AS categories, f.year, f.duration, f.directors, " +
-            "f.producers, f.film_cast " +
+    @Query(value = "SELECT f.title, STRING_AGG(c.name, ', ') AS categories, f.year, f.duration, f.directors, f.producers, f.film_cast " +
             "FROM tb_film f " +
             "JOIN tb_film_category fc ON f.id = fc.film_id " +
             "JOIN tb_category c ON fc.category_id = c.id " +
-            "GROUP BY f.id ORDER BY f.title", nativeQuery = true)
+            "GROUP BY f.id " +
+            "ORDER BY f.title", nativeQuery = true)
     List<String[]> findAllForXLS();
 
     Optional<Film> getByTitleAndYear(String title, int year);

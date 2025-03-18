@@ -39,8 +39,8 @@ public class FilmMapper {
                 .directors(film.getDirectors())
                 .description(film.getDescription())
                 .baftaAwards(film.getBaftaAwards())
-                .image(Base64.getEncoder().encodeToString(film.getImage()))
-                .background(Base64.getEncoder().encodeToString(film.getBackground()))
+                .image(film.getImage() != null ? Base64.getEncoder().encodeToString(film.getImage()) : "")
+                .background(film.getBackground() != null ? Base64.getEncoder().encodeToString(film.getBackground()) : "")
                 .categories(new ArrayList<>(film.getCategories().stream().map(Category::getName).collect(Collectors.toSet())))
                 .build();
     }

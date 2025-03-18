@@ -3,12 +3,14 @@ package com.licoflix.util.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DataListResponse<T> extends Response implements Serializable {
@@ -19,4 +21,10 @@ public class DataListResponse<T> extends Response implements Serializable {
     private List<T> data;
     private int totalPages = 0;
     private Long totalElements = 0L;
+
+    public DataListResponse(List<T> data, int totalPages, long totalElements) {
+        this.data = data;
+        this.totalPages = totalPages;
+        this.totalElements = totalElements;
+    }
 }
