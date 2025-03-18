@@ -41,27 +41,19 @@ public class FilmService implements IFilmService {
     private final UserFilmListRepository userFilmListRepository;
 
     @Override
+    @Transactional
     public DataListResponse<FilmResponse> list(String search, String category, Integer page, Integer pageSize) {
-        List<FilmResponse> films = new ArrayList<>();
-        DataListResponse<FilmResponse> response = new DataListResponse<>();
-
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("createdIn")));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
         Page<Film> pages = filmRepository.findAll(FilmSpecification.containsTextInAttributes(search, category), pageable);
-        if (!pages.isEmpty())
-            pages.forEach(film -> films.add(FilmMapper.entityToDTO(film)));
+        List<FilmResponse> films = pages.map(FilmMapper::entityToDTO).toList();
 
-        response.setData(films);
-        response.setTotalPages(pages.getTotalPages());
-        response.setTotalElements(pages.getTotalElements());
-        return response;
+        return new DataListResponse<>(films, pages.getTotalPages(), pages.getTotalElements());
     }
 
     @Override
     @Transactional
     public DataListResponse<FilmGroupedByCategoryResponse> listByCategories() {
-        DataListResponse<FilmGroupedByCategoryResponse> response = new DataListResponse<>();
-
         List<Object[]> filmsGroupedData = filmRepository.findFilmsWithCategories();
 
         Map<String, List<FilmResponse>> groupedFilmsMap = filmsGroupedData.stream()
@@ -73,13 +65,8 @@ public class FilmService implements IFilmService {
                 .map(entry -> new FilmGroupedByCategoryResponse(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
-        response.setTotalPages(1);
-        response.setData(groupedFilms);
-        response.setTotalElements((long) groupedFilms.size());
-
-        return response;
+        return new DataListResponse<>(groupedFilms, 1, groupedFilms.size());
     }
-
 
     @Override
     public DataListResponse<CategoryResponse> listCategories() {
@@ -97,7 +84,6 @@ public class FilmService implements IFilmService {
     @Transactional
     public DataResponse<FilmResponse> save(FilmRequest filmRequest, String authorization, String timezone) throws IOException {
         List<Category> categories;
-        DataResponse<FilmResponse> response = new DataResponse<>();
 
         UserDetailsResponse userDetails = restService.getUserDetails(authorization, timezone);
 
@@ -113,9 +99,8 @@ public class FilmService implements IFilmService {
         saveFilmFiles(filmRequest);
 
         filmRepository.save(film);
-        response.setData(FilmMapper.entityToDTO(film));
 
-        return response;
+        return new DataResponse<>(FilmMapper.entityToDTO(film));
     }
 
     @Override
@@ -143,8 +128,6 @@ public class FilmService implements IFilmService {
     @Override
     @Transactional
     public DataResponse<FilmResponse> addFilmInList(Long id, String authorization, String timezone) throws Exception {
-        DataResponse<FilmResponse> response = new DataResponse<>();
-
         UserDetailsResponse userDetails = restService.getUserDetails(authorization, timezone);
         Film film = filmRepository.findById(id).orElseThrow(() -> new Exception("Film with ID " + id + " not found"));
         List<UserFilmList> list = userFilmListRepository.findByUserId(userDetails.getId());
@@ -152,20 +135,19 @@ public class FilmService implements IFilmService {
         if (list.stream().noneMatch(x -> x.getFilm().equals(film)))
             userFilmListRepository.save(UserFilmList.builder().film(film).user(userDetails.getId()).build());
 
-        response.setData(FilmMapper.entityToDTO(film));
-        return response;
+        return new DataResponse<>(FilmMapper.entityToDTO(film));
     }
 
     @Override
     @Transactional
     public DataListResponse<FilmResponse> geFilmUserList(String authorization, String timezone) {
-        DataListResponse<FilmResponse> response = new DataListResponse<>();
 
         UserDetailsResponse userDetails = restService.getUserDetails(authorization, timezone);
         List<UserFilmList> list = userFilmListRepository.findByUserId(userDetails.getId());
 
-        response.setData(FilmMapper.entityToDTOList(list.stream().map(UserFilmList::getFilm).toList()));
-        return response;
+        List<FilmResponse> response = new ArrayList<>(FilmMapper.entityToDTOList(list.stream().map(UserFilmList::getFilm).toList()));
+
+        return new DataListResponse<>(response, 1, response.size());
     }
 
     @Override
