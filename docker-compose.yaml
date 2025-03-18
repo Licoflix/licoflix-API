@@ -12,4 +12,8 @@ services:
       - "5432:5432"
     volumes:
       - ./init/database-scripts.sql:/docker-entrypoint-initdb.d/database-scripts.sql
+      - ./data/postgres:/var/lib/postgresql/data  # diretório local do repositório
     restart: unless-stopped
+
+volumes:
+  postgres_data:
