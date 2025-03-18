@@ -28,8 +28,11 @@ public class Film extends AuditFields {
     @Column(name = "oscars", nullable = false)
     private Integer oscars;
 
-    @Column(name = "baftaAwards", nullable = false)
+    @Column(name = "bafta_awards", nullable = false)
     private Integer baftaAwards;
+
+    @Column(name = "golden_globes", nullable = false)
+    private Integer goldenGlobes;
 
     @Column(name = "imdb", nullable = false)
     private Double imdb;

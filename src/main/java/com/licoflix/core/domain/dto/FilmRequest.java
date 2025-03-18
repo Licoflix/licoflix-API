@@ -24,6 +24,8 @@ public class FilmRequest {
 
     private Integer baftaAwards;
 
+    private Integer goldenGlobes;
+
     @NotNull(message = "Film title is required")
     private String title;
 
