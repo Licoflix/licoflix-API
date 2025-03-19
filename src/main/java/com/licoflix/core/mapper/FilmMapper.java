@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,8 @@ public class FilmMapper {
                 .goldenGlobes(film.getGoldenGlobes())
                 .image(film.getImage() != null ? Base64.getEncoder().encodeToString(film.getImage()) : "")
                 .background(film.getBackground() != null ? Base64.getEncoder().encodeToString(film.getBackground()) : "")
-                .categories(new ArrayList<>(film.getCategories().stream().map(Category::getName).collect(Collectors.toSet())))
+                .categories(new ArrayList<>(film.getCategories().stream().map(Category::getName).sorted()
+                        .collect(Collectors.toCollection(LinkedHashSet::new))))
                 .build();
     }
 
