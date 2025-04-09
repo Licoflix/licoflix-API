@@ -1,10 +1,7 @@
 package com.licoflix.controller;
 
 import com.licoflix.core.domain.common.DomainReturnCode;
-import com.licoflix.core.domain.dto.CategoryResponse;
-import com.licoflix.core.domain.dto.FilmGroupedByCategoryResponse;
-import com.licoflix.core.domain.dto.FilmRequest;
-import com.licoflix.core.domain.dto.FilmResponse;
+import com.licoflix.core.domain.dto.*;
 import com.licoflix.core.service.film.IFilmService;
 import com.licoflix.util.response.DataListResponse;
 import com.licoflix.util.response.DataResponse;
@@ -198,5 +195,40 @@ public class FilmController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(subtitleResource);
+    }
+
+    @PostMapping("/continue-watching")
+    @Operation(summary = "Add to Continue Watch List", description = "Add film to continue watching list")
+    public void addToContinueWatchList(
+            @RequestParam(name = "title") String title,
+            @RequestParam(name = "current") String currentTime,
+            @RequestParam(name = "duration") String duration,
+            @RequestHeader(name = "Authorization") String authorization,
+            @RequestHeader(name = "Timezone") String timezone) throws Exception {
+        logger.info("Add to Continue Watch List method" + STARTED);
+        service.addToContinueWatchList(title, currentTime, duration, authorization, timezone);
+        logger.info("Add to Continue Watch List method" + FINISHED);
+    }
+
+    @DeleteMapping("/continue-watching")
+    @Operation(summary = "Remove from Continue Watch List", description = "Remove film from continue watching list")
+    public void removeFromContinueWatchList(
+            @RequestParam(name = "title") String title,
+            @RequestHeader(name = "Authorization") String authorization,
+            @RequestHeader(name = "Timezone") String timezone) throws Exception {
+        logger.info("Remove from Continue Watch List method" + STARTED);
+        service.removeFromContinueWatchList(title, authorization, timezone);
+        logger.info("Remove from Continue Watch List method" + FINISHED);
+    }
+
+    @GetMapping("/continue-watching")
+    @Operation(summary = "List Continue Watching Films", description = "List all films in continue watching list")
+    public DataListResponse<FilmWatchingListResponse> listContinueWatchList(
+            @RequestHeader(name = "Authorization") String authorization,
+            @RequestHeader(name = "Timezone") String timezone) throws Exception {
+        logger.info("List Continue Watching Films method" + STARTED);
+        DataListResponse<FilmWatchingListResponse> response = service.listWatchingFilmList(authorization, timezone);
+        logger.info("List Continue Watching Films method" + FINISHED);
+        return response;
     }
 }

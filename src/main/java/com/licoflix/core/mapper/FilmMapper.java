@@ -2,8 +2,10 @@ package com.licoflix.core.mapper;
 
 import com.licoflix.core.domain.dto.FilmRequest;
 import com.licoflix.core.domain.dto.FilmResponse;
+import com.licoflix.core.domain.dto.FilmWatchingListResponse;
 import com.licoflix.core.domain.model.film.Category;
 import com.licoflix.core.domain.model.film.Film;
+import com.licoflix.core.domain.model.film.FilmWatchingList;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -86,5 +88,20 @@ public class FilmMapper {
         film.setId(id);
         film.setCreatedBy(user);
         film.setChangedIn(LocalDateTime.now());
+    }
+
+    public static List<FilmWatchingListResponse> watchingListToDTO(List<FilmWatchingList> watching) {
+        List<FilmWatchingListResponse> responses = new ArrayList<>();
+
+        watching.forEach(entity -> responses
+                .add(FilmWatchingListResponse
+                        .builder()
+                        .user(entity.getUser())
+                        .current(entity.getCurrent())
+                        .duration(entity.getDuration())
+                        .film(entityToDTO(entity.getFilm()))
+                        .build()));
+
+        return responses;
     }
 }
