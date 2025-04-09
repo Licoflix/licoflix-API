@@ -3,6 +3,7 @@ package com.licoflix.core.service.film;
 import com.licoflix.core.domain.dto.*;
 import com.licoflix.core.domain.model.film.Category;
 import com.licoflix.core.domain.model.film.Film;
+import com.licoflix.core.domain.model.film.FilmWatchingList;
 import com.licoflix.core.domain.model.film.UserFilmList;
 import com.licoflix.core.domain.repository.*;
 import com.licoflix.core.mapper.FilmMapper;
@@ -37,6 +38,7 @@ public class FilmService implements IFilmService {
     private final RestService restService;
     private final FilmRepository filmRepository;
     private final CategoryRepository categoryRepository;
+    private final FilmWatchingRepository filmWatchingRepository;
     private final FilmCategoryRepository filmCategoryRepository;
     private final UserFilmListRepository userFilmListRepository;
 
@@ -159,6 +161,56 @@ public class FilmService implements IFilmService {
         userFilmListRepository.removeByUserIdAndFilmId(userDetails.getId(), film.getId());
     }
 
+    @Override
+    @Transactional
+    public void addToContinueWatchList(String title, String current, String duration, String authorization,
+                                       String timezone) throws Exception {
+        UserDetailsResponse user = restService.getUserDetails(authorization, timezone);
+        Film film = filmRepository.findByTitle(title).orElseThrow(() -> new Exception("Film with title " + title + " not found"));
+        Optional<FilmWatchingList> existingRecord = filmWatchingRepository.findByFilmAndUser(user.getId(), film.getId());
+
+        float currentTime = Float.parseFloat(current);
+        boolean shouldDelete = (Float.parseFloat(duration) - currentTime <= 300) || (currentTime <= 8);
+
+        if (shouldDelete) {
+            existingRecord.ifPresent(filmWatchingRepository::delete);
+        } else {
+            handleCreateOrUpdate(existingRecord, film, user.getId(), current, duration);
+        }
+    }
+
+    private void handleCreateOrUpdate(Optional<FilmWatchingList> existingRecord,
+                                      Film film, Long userId,
+                                      String current, String duration) {
+        if (existingRecord.isPresent()) {
+            FilmWatchingList record = existingRecord.get();
+            record.setCurrent(current);
+            record.setDuration(duration);
+            filmWatchingRepository.save(record);
+        } else {
+            filmWatchingRepository.save(FilmWatchingList.builder().film(film).user(userId).current(current)
+                    .duration(duration).build());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeFromContinueWatchList(String title, String authorization, String timezone) throws Exception {
+        UserDetailsResponse user = restService.getUserDetails(authorization, timezone);
+        Film film = filmRepository.findByTitle(title).orElseThrow(() -> new Exception("Film with title " + title + " not found"));
+        FilmWatchingList watching = filmWatchingRepository.getByFilmAndUser(user.getId(), film.getId());
+
+        filmWatchingRepository.delete(watching);
+    }
+
+    @Override
+    @Transactional
+    public DataListResponse<FilmWatchingListResponse> listWatchingFilmList(String authorization, String timezone) throws Exception {
+        UserDetailsResponse user = restService.getUserDetails(authorization, timezone);
+        List<FilmWatchingList> watching = filmWatchingRepository.findByUser(user.getId());
+
+        return new DataListResponse<>(FilmMapper.watchingListToDTO(watching), 1, watching.size());
+    }
 
     private Category getCategory(String categoryName) {
         return categoryRepository.findByName(categoryName)

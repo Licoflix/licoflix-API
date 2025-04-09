@@ -29,4 +29,7 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 
     @Query("SELECT c.name, f FROM Film f JOIN f.categories c")
     List<Object[]> findFilmsWithCategories();
+
+    @Query("SELECT f FROM Film f where f.title = :title")
+    Optional<Film> findByTitle(String title);
 }

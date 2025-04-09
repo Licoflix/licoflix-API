@@ -1,9 +1,6 @@
 package com.licoflix.core.service.film;
 
-import com.licoflix.core.domain.dto.CategoryResponse;
-import com.licoflix.core.domain.dto.FilmGroupedByCategoryResponse;
-import com.licoflix.core.domain.dto.FilmRequest;
-import com.licoflix.core.domain.dto.FilmResponse;
+import com.licoflix.core.domain.dto.*;
 import com.licoflix.util.response.DataListResponse;
 import com.licoflix.util.response.DataResponse;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,4 +28,13 @@ public interface IFilmService {
 
     @Transactional
     void removeFilmFromList(Long id, String authorization, String timezone) throws Exception;
+
+    @Transactional
+    void addToContinueWatchList(String title, String current, String duration, String authorization, String timezone) throws Exception;
+
+    @Transactional
+    void removeFromContinueWatchList(String title, String authorization, String timezone) throws Exception;
+
+    @Transactional
+    DataListResponse<FilmWatchingListResponse> listWatchingFilmList(String authorization, String timezone) throws Exception;
 }
