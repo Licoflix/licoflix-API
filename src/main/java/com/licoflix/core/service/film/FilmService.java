@@ -10,6 +10,7 @@ import com.licoflix.core.mapper.FilmMapper;
 import com.licoflix.core.service.rest.RestService;
 import com.licoflix.util.response.DataListResponse;
 import com.licoflix.util.response.DataResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,33 +164,36 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
-    public void addToContinueWatchList(String title, String current, String duration, String authorization,
-                                       String timezone) throws Exception {
+    public void addToContinueWatchList(String title, String current, String duration,
+                                       String authorization, String timezone) {
         UserDetailsResponse user = restService.getUserDetails(authorization, timezone);
-        Film film = filmRepository.findByTitle(title).orElseThrow(() -> new Exception("Film with title " + title + " not found"));
-        Optional<FilmWatchingList> existingRecord = filmWatchingRepository.findByFilmAndUser(user.getId(), film.getId());
+        Film film = filmRepository.findByTitle(title).orElseThrow(() -> new EntityNotFoundException("Film not found: " + title));
+        List<FilmWatchingList> records = filmWatchingRepository.findByFilmIdAndUserIdOrderByIdDesc(film.getId(), user.getId());
 
-        float currentTime = Float.parseFloat(current);
-        boolean shouldDelete = (Float.parseFloat(duration) - currentTime <= 300) || (currentTime <= 8);
-
-        if (shouldDelete) {
-            existingRecord.ifPresent(filmWatchingRepository::delete);
+        if (!records.isEmpty()) {
+            processMostRecentRecord(current, duration, records);
         } else {
-            handleCreateOrUpdate(existingRecord, film, user.getId(), current, duration);
+            FilmWatchingList newRecord = FilmWatchingList.builder().film(film).user(user.getId()).current(current).duration(duration).build();
+            filmWatchingRepository.save(newRecord);
         }
     }
 
-    private void handleCreateOrUpdate(Optional<FilmWatchingList> existingRecord,
-                                      Film film, Long userId,
-                                      String current, String duration) {
-        if (existingRecord.isPresent()) {
-            FilmWatchingList record = existingRecord.get();
-            record.setCurrent(current);
-            record.setDuration(duration);
-            filmWatchingRepository.save(record);
+    private void processMostRecentRecord(String current, String duration, List<FilmWatchingList> records) {
+        FilmWatchingList mostRecent = records.get(0);
+
+        if (records.size() > 1) {
+            filmWatchingRepository.deleteAll(records.subList(1, records.size()));
+        }
+
+        float currentTime = Float.parseFloat(current);
+        float totalDuration = Float.parseFloat(duration);
+        boolean shouldDelete = (totalDuration - currentTime <= 300) || (currentTime <= 8);
+
+        if (shouldDelete) {
+            filmWatchingRepository.delete(mostRecent);
         } else {
-            filmWatchingRepository.save(FilmWatchingList.builder().film(film).user(userId).current(current)
-                    .duration(duration).build());
+            mostRecent.setCurrent(current);
+            mostRecent.setDuration(duration);
         }
     }
 
