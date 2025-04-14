@@ -17,6 +17,6 @@ public interface FilmWatchingRepository extends JpaRepository<FilmWatchingList, 
     @Query(value = "select f from FilmWatchingList f where f.user = :id")
     List<FilmWatchingList> findByUser(Long id);
 
-    @Query(value = "select f from FilmWatchingList f where f.film.id = :film and f.user = :user")
-    Optional<FilmWatchingList> findByFilmAndUser(Long user, Long film);
+    @Query("select f from FilmWatchingList f where f.film.id = :filmId and f.user = :userId order by f.id desc")
+    List<FilmWatchingList> findByFilmIdAndUserIdOrderByIdDesc(Long filmId, Long userId);
 }
