@@ -42,11 +42,12 @@ public class FilmController {
             @RequestParam(name = "page") Integer page,
             @RequestParam(name = "pageSize") Integer pageSize,
             @RequestParam(name = "search", required = false) String search,
-            @RequestParam(name = "category", required = false) String category
+            @RequestParam(name = "orderBy", required = false) String orderBy,
+            @RequestParam(name = "direction", required = false) String direction
     ) {
         logger.info("List method" + STARTED);
 
-        DataListResponse<FilmResponse> response = service.list(search, category, page, pageSize);
+        DataListResponse<FilmResponse> response = service.list(search, orderBy, direction, page, pageSize);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
         logger.info("List method" + FINISHED);

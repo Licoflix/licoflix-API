@@ -12,6 +12,7 @@ import com.licoflix.util.response.DataListResponse;
 import com.licoflix.util.response.DataResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,10 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,10 +43,12 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
-    public DataListResponse<FilmResponse> list(String search, String category, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+    public DataListResponse<FilmResponse> list(String search, String orderBy, String direction, Integer page, Integer pageSize) {
+        String validOrderBy = StringUtils.isBlank(orderBy) ? "id" : orderBy;
+        Sort.Direction sortDirection = Sort.Direction.fromString(StringUtils.isBlank(direction) ? "desc" : direction.toLowerCase());
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(new Sort.Order(sortDirection, validOrderBy)));
 
-        Page<Film> pages = filmRepository.findAll(FilmSpecification.containsTextInAttributes(search, category), pageable);
+        Page<Film> pages = filmRepository.findAll(FilmSpecification.containsTextInAttributes(search), pageable);
         List<FilmResponse> films = pages.map(FilmMapper::entityToDTO).toList();
 
         return new DataListResponse<>(films, pages.getTotalPages(), pages.getTotalElements());
