@@ -56,19 +56,26 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
-    public DataListResponse<FilmGroupedByCategoryResponse> listByCategories() {
-        List<Object[]> filmsGroupedData = filmRepository.findFilmsWithCategories();
+    public DataListResponse<FilmGroupedByCategoryResponse> listByCategories(Integer page, Integer pageSize, String category) {
+        page = page != null && page > 0 ? page : 1;
+        pageSize = pageSize != null && pageSize > 0 ? pageSize : 10;
 
-        Map<String, List<FilmResponse>> groupedFilmsMap = filmsGroupedData.stream()
-                .collect(Collectors.groupingBy(
-                        row -> (String) row[0],
-                        Collectors.mapping(row -> FilmMapper.entityToDTO((Film) row[1]), Collectors.toList())));
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
 
-        List<FilmGroupedByCategoryResponse> groupedFilms = groupedFilmsMap.entrySet().stream()
-                .map(entry -> new FilmGroupedByCategoryResponse(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+        Page<Object[]> filmsPage = (category != null && !category.trim().isEmpty())
+                ? filmRepository.findFilmsWithCategoriesByCategory(category.trim(), pageable)
+                : filmRepository.findFilmsWithCategories(pageable);
 
-        return new DataListResponse<>(groupedFilms, 1, groupedFilms.size());
+        Map<String, List<FilmResponse>> groupedFilmsMap = filmsPage.getContent()
+                .parallelStream().collect(Collectors.groupingByConcurrent(row -> (String) row[0], Collectors.mapping(
+                        row -> FilmMapper.entityToDTO((Film) row[1]), Collectors.toList())));
+
+        List<FilmGroupedByCategoryResponse> groupedFilms = new ArrayList<>(groupedFilmsMap.size());
+        groupedFilmsMap.forEach((key, value) ->
+                groupedFilms.add(new FilmGroupedByCategoryResponse(key, value))
+        );
+
+        return new DataListResponse<>(groupedFilms, filmsPage.getTotalPages(), filmsPage.getTotalElements());
     }
 
     @Override

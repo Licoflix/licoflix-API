@@ -15,7 +15,7 @@ public interface IFilmService {
 
     DataResponse<FilmResponse> get(Long id);
 
-    DataListResponse<FilmGroupedByCategoryResponse> listByCategories();
+    DataListResponse<FilmGroupedByCategoryResponse> listByCategories(Integer page, Integer pageSize, String category);
 
     DataListResponse<CategoryResponse> listCategories();
 
