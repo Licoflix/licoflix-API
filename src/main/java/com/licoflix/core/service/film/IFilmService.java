@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 public interface IFilmService {
-    DataListResponse<FilmResponse> list(String search, String category, Integer page, Integer pageSize);
+    DataListResponse<FilmResponse> list(String search, String orderBy, String direction, Integer page, Integer pageSize);
 
     DataResponse<FilmResponse> save(FilmRequest filmRequestDTO, String authorization, String timezone) throws IOException, GeneralSecurityException;
 

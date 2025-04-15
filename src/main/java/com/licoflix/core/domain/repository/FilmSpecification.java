@@ -10,13 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilmSpecification {
-    public static Specification<Film> containsTextInAttributes(String text, String category) {
+    public static Specification<Film> containsTextInAttributes(String text) {
         return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
-
-            if (category != null && !category.isEmpty()) {
-                predicates.add(builder.equal(root.get("categories").get("name"), category));
-            }
 
             if (text != null && !text.isEmpty()) {
                 List<Predicate> textPredicates = new ArrayList<>();
