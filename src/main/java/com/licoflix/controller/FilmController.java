@@ -55,10 +55,14 @@ public class FilmController {
 
     @GetMapping("/grouped")
     @Operation(summary = "List Films Grouped by Categories", description = "List Films Grouped by Categories")
-    public DataListResponse<FilmGroupedByCategoryResponse> listGroupedByCategories() {
+    public DataListResponse<FilmGroupedByCategoryResponse> listGroupedByCategories(
+            @RequestParam(name = "page") Integer page,
+            @RequestParam(name = "pageSize") Integer pageSize,
+            @RequestParam(name = "category", required = false) String category
+    ) {
         logger.info("List Films Grouped by Categories method" + STARTED);
 
-        DataListResponse<FilmGroupedByCategoryResponse> response = service.listByCategories();
+        DataListResponse<FilmGroupedByCategoryResponse> response = service.listByCategories(page, pageSize, category);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
 
         logger.info("List Films Grouped by Categories method" + FINISHED);

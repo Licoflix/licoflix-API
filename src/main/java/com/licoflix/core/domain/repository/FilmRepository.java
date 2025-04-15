@@ -1,13 +1,11 @@
 package com.licoflix.core.domain.repository;
 
-import com.licoflix.core.domain.model.film.Category;
 import com.licoflix.core.domain.model.film.Film;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,7 +26,10 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
     Optional<Film> getByTitleAndYear(String title, int year);
 
     @Query("SELECT c.name, f FROM Film f JOIN f.categories c")
-    List<Object[]> findFilmsWithCategories();
+    Page<Object[]> findFilmsWithCategories(Pageable pageable);
+
+    @Query("SELECT c.name, f FROM Film f JOIN f.categories c WHERE c.name = :category")
+    Page<Object[]> findFilmsWithCategoriesByCategory(String category, Pageable pageable);
 
     @Query("SELECT f FROM Film f where f.title = :title")
     Optional<Film> findByTitle(String title);
