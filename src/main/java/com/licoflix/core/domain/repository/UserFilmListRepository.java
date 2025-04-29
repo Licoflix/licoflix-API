@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface UserFilmListRepository extends JpaRepository<UserFilmList, Long> {
 
-    @Query(value = "select tuf from UserFilmList tuf where user = :id")
+    @Query(value = "select tuf from UserFilmList tuf where user = :id order by tuf.id desc")
     List<UserFilmList> findByUserId(Long id);
 
     @Modifying
