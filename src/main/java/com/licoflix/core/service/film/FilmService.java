@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -178,29 +181,15 @@ public class FilmService implements IFilmService {
         List<FilmWatchingList> records = filmWatchingRepository.findByFilmIdAndUserIdOrderByIdDesc(film.getId(), user.getId());
 
         if (!records.isEmpty()) {
-            processMostRecentRecord(current, duration, records);
-        } else {
-            FilmWatchingList newRecord = FilmWatchingList.builder().film(film).user(user.getId()).current(current).duration(duration).build();
-            filmWatchingRepository.save(newRecord);
-        }
-    }
-
-    private void processMostRecentRecord(String current, String duration, List<FilmWatchingList> records) {
-        FilmWatchingList mostRecent = records.get(0);
-
-        if (records.size() > 1) {
-            filmWatchingRepository.deleteAll(records.subList(1, records.size()));
+            filmWatchingRepository.deleteAll(records);
         }
 
         float currentTime = Float.parseFloat(current);
         float totalDuration = Float.parseFloat(duration);
-        boolean shouldDelete = (totalDuration - currentTime <= 300) || (currentTime <= 8);
 
-        if (shouldDelete) {
-            filmWatchingRepository.delete(mostRecent);
-        } else {
-            mostRecent.setCurrent(current);
-            mostRecent.setDuration(duration);
+        if (!(totalDuration - currentTime <= 300 || currentTime <= 8)) {
+            FilmWatchingList newRecord = FilmWatchingList.builder().film(film).user(user.getId()).current(current).duration(duration).build();
+            filmWatchingRepository.save(newRecord);
         }
     }
 
