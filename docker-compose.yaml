@@ -12,8 +12,13 @@ services:
       - "5432:5432"
     volumes:
       - ./init/database-scripts.sql:/docker-entrypoint-initdb.d/database-scripts.sql
-      - ./data/postgres:/var/lib/postgresql/data  # diretório local do repositório
+      - postgres_data:/var/lib/postgresql/data  # Alterado para usar volume nomeado
     restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./data/postgres  # Mantém o mesmo local físico dos dados
