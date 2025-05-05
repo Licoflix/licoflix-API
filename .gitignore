@@ -26,6 +26,8 @@ target/
 /nbdist/
  data/postgres
  data/postgres_old
+ /data/postgres
+ /data/postgres_old
 /.nb-gradle/
 build/
 !**/src/main/**/build/
