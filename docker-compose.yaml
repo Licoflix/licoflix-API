@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "licoflix001db"
     ports:
-      - "5432:5432"
+      - "6432:5432"
     volumes:
       - ./init/database-scripts.sql:/docker-entrypoint-initdb.d/database-scripts.sql
       - postgres_data:/var/lib/postgresql/data  # Alterado para usar volume nomeado
