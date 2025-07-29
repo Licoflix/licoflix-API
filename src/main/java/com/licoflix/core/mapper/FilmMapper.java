@@ -44,6 +44,7 @@ public class FilmMapper {
                 .description(film.getDescription())
                 .baftaAwards(film.getBaftaAwards())
                 .goldenGlobes(film.getGoldenGlobes())
+                .originalTitle(film.getOriginalTitle())
                 .image(film.getImage() != null ? Base64.getEncoder().encodeToString(film.getImage()) : "")
                 .background(film.getBackground() != null ? Base64.getEncoder().encodeToString(film.getBackground()) : "")
                 .categories(new ArrayList<>(film.getCategories().stream().map(Category::getName).sorted()
@@ -78,6 +79,7 @@ public class FilmMapper {
                 .baftaAwards(filmRequest.getBaftaAwards())
                 .description(filmRequest.getDescription())
                 .goldenGlobes(filmRequest.getGoldenGlobes())
+                .originalTitle(filmRequest.getOriginalTitle())
                 .build();
 
         film.setCreatedBy(id);

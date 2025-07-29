@@ -40,6 +40,7 @@ public class FilmSpecification {
         }
         predicates.add(builder.like(builder.lower(root.get("cast")), likePattern));
         predicates.add(builder.like(builder.lower(root.get("title")), likePattern));
+        predicates.add(builder.like(builder.lower(root.get("originalTitle")), likePattern));
         predicates.add(builder.like(builder.lower(root.get("directors")), likePattern));
         predicates.add(builder.like(builder.lower(root.get("producers")), likePattern));
     }

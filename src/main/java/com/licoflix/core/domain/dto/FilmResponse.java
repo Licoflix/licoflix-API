@@ -27,6 +27,7 @@ public class FilmResponse {
     private String background;
     private String description;
     private Integer baftaAwards;
+    private String originalTitle;
     private Integer goldenGlobes;
     private List<String> categories;
 

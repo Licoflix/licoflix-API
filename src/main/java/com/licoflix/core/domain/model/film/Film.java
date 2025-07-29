@@ -40,6 +40,9 @@ public class Film extends AuditFields {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "orginal_title", nullable = false)
+    private String originalTitle;
+
     @Column(name = "language", nullable = false)
     private String language;
 
