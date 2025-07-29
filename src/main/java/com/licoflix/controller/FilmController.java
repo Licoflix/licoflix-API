@@ -45,12 +45,8 @@ public class FilmController {
             @RequestParam(name = "orderBy", required = false) String orderBy,
             @RequestParam(name = "direction", required = false) String direction
     ) {
-        logger.info("List method" + STARTED);
-
         DataListResponse<FilmResponse> response = service.list(search, orderBy, direction, page, pageSize);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
-
-        logger.info("List method" + FINISHED);
         return response;
     }
 
@@ -61,24 +57,16 @@ public class FilmController {
             @RequestParam(name = "pageSize") Integer pageSize,
             @RequestParam(name = "category", required = false) String category
     ) {
-        logger.info("List Films Grouped by Categories method" + STARTED);
-
         DataListResponse<FilmGroupedByCategoryResponse> response = service.listByCategories(page, pageSize, category);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
-
-        logger.info("List Films Grouped by Categories method" + FINISHED);
         return response;
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get Film", description = "Get Film by Id")
     public DataResponse<FilmResponse> get(@PathVariable(name = "id") Long id) {
-        logger.info("Get method" + STARTED);
-
         DataResponse<FilmResponse> response = service.get(id);
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
-
-        logger.info("Get method" + FINISHED);
         return response;
     }
 
@@ -86,21 +74,15 @@ public class FilmController {
     @Operation(summary = "Delete Film", description = "Delete Film by Id")
     public void delete(@PathVariable(name = "id") Long id) throws Exception {
         logger.info("Delete method" + STARTED);
-
         service.delete(id);
-
         logger.info("Delete method" + FINISHED);
     }
 
     @GetMapping("/category")
     @Operation(summary = "List Categories", description = "List Categories")
     public DataListResponse<CategoryResponse> listCategories() {
-        logger.info("List Categories method" + STARTED);
-
         DataListResponse<CategoryResponse> response = service.listCategories();
         response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
-
-        logger.info("List Categories method" + FINISHED);
         return response;
     }
 
@@ -127,11 +109,7 @@ public class FilmController {
             @PathVariable Long id,
             @RequestHeader(name = "Timezone") String timezone,
             @RequestHeader(name = "Authorization") String authorization) throws Exception {
-        logger.info("Add film in list method" + STARTED);
-        DataResponse<FilmResponse> response = service.addFilmInList(id, authorization, timezone);
-
-        logger.info("Add film in list method" + FINISHED);
-        return response;
+        return service.addFilmInList(id, authorization, timezone);
     }
 
     @GetMapping("/user/list")
@@ -139,11 +117,7 @@ public class FilmController {
     public DataListResponse<FilmResponse> get(
             @RequestHeader(name = "Timezone") String timezone,
             @RequestHeader(name = "Authorization") String authorization) throws Exception {
-        logger.info("Get Film User List method" + STARTED);
-        DataListResponse<FilmResponse> response = service.geFilmUserList(authorization, timezone);
-
-        logger.info("Get Film User List method" + FINISHED);
-        return response;
+        return service.geFilmUserList(authorization, timezone);
     }
 
     @DeleteMapping("/user/list/{id}")
@@ -152,10 +126,7 @@ public class FilmController {
             @PathVariable Long id,
             @RequestHeader(name = "Timezone") String timezone,
             @RequestHeader(name = "Authorization") String authorization) throws Exception {
-        logger.info("Delete Film from User List method" + STARTED);
         service.removeFilmFromList(id, authorization, timezone);
-
-        logger.info("Delete Film from User List method" + FINISHED);
     }
 
     @GetMapping("/{title}/video")
@@ -210,9 +181,7 @@ public class FilmController {
             @RequestParam(name = "duration") String duration,
             @RequestHeader(name = "Authorization") String authorization,
             @RequestHeader(name = "Timezone") String timezone) throws Exception {
-        logger.info("Add to Continue Watch List method" + STARTED);
         service.addToContinueWatchList(title, currentTime, duration, authorization, timezone);
-        logger.info("Add to Continue Watch List method" + FINISHED);
     }
 
     @DeleteMapping("/continue-watching")
@@ -221,9 +190,7 @@ public class FilmController {
             @RequestParam(name = "title") String title,
             @RequestHeader(name = "Authorization") String authorization,
             @RequestHeader(name = "Timezone") String timezone) throws Exception {
-        logger.info("Remove from Continue Watch List method" + STARTED);
         service.removeFromContinueWatchList(title, authorization, timezone);
-        logger.info("Remove from Continue Watch List method" + FINISHED);
     }
 
     @GetMapping("/continue-watching")
@@ -231,9 +198,6 @@ public class FilmController {
     public DataListResponse<FilmWatchingListResponse> listContinueWatchList(
             @RequestHeader(name = "Authorization") String authorization,
             @RequestHeader(name = "Timezone") String timezone) throws Exception {
-        logger.info("List Continue Watching Films method" + STARTED);
-        DataListResponse<FilmWatchingListResponse> response = service.listWatchingFilmList(authorization, timezone);
-        logger.info("List Continue Watching Films method" + FINISHED);
-        return response;
+        return service.listWatchingFilmList(authorization, timezone);
     }
 }
