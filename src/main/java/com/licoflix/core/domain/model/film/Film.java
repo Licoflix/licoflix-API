@@ -37,6 +37,9 @@ public class Film extends AuditFields {
     @Column(name = "imdb", nullable = false)
     private Double imdb;
 
+    @Column(name = "saga")
+    private String saga;
+
     @Column(name = "title", nullable = false)
     private String title;
 

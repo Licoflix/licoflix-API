@@ -62,6 +62,14 @@ public class FilmController {
         return response;
     }
 
+    @GetMapping("/saga")
+    @Operation(summary = "List Films Grouped by Saga", description = "List Films Grouped by Saga")
+    public DataListResponse<FilmGroupedByCategoryResponse> listGroupedBySaga(){
+        DataListResponse<FilmGroupedByCategoryResponse> response = service.listBySaga();
+        response.setMessage(DomainReturnCode.SUCCESSFUL_OPERATION.getDesc());
+        return response;
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get Film", description = "Get Film by Id")
     public DataResponse<FilmResponse> get(@PathVariable(name = "id") Long id) {

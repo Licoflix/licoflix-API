@@ -29,6 +29,8 @@ public class FilmRequest {
     @NotNull(message = "Film title is required")
     private String title;
 
+    private String saga;
+
     @NotNull(message = "Film orignal title is required")
     private String originalTitle;
 

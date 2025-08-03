@@ -47,10 +47,16 @@ public class FilmService implements IFilmService {
     @Override
     @Transactional
     public DataListResponse<FilmResponse> list(String search, String orderBy, String direction, Integer page, Integer pageSize) {
-        String validOrderBy = StringUtils.isBlank(orderBy) ? "id" : orderBy;
+        String validOrderBy = StringUtils.isBlank(orderBy) ? "year" : orderBy;
         Sort.Direction sortDirection = Sort.Direction.fromString(StringUtils.isBlank(direction) ? "desc" : direction.toLowerCase());
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(new Sort.Order(sortDirection, validOrderBy)));
+        Sort sort;
+        if (StringUtils.isBlank(orderBy)) {
+            sort = Sort.by(Sort.Order.desc("year"), Sort.Order.desc("id"));
+        } else {
+            sort = Sort.by(new Sort.Order(sortDirection, validOrderBy));
+        }
 
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
         Page<Film> pages = filmRepository.findAll(FilmSpecification.containsTextInAttributes(search), pageable);
         List<FilmResponse> films = pages.map(FilmMapper::entityToDTO).toList();
 
@@ -63,22 +69,38 @@ public class FilmService implements IFilmService {
         page = page != null && page > 0 ? page : 1;
         pageSize = pageSize != null && pageSize > 0 ? pageSize : 10;
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
-
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("year"), Sort.Order.desc("id")));
         Page<Object[]> filmsPage = (category != null && !category.trim().isEmpty())
                 ? filmRepository.findFilmsWithCategoriesByCategory(category.trim(), pageable)
                 : filmRepository.findFilmsWithCategories(pageable);
 
         Map<String, List<FilmResponse>> groupedFilmsMap = filmsPage.getContent()
-                .parallelStream().collect(Collectors.groupingByConcurrent(row -> (String) row[0], Collectors.mapping(
+                .stream().collect(Collectors.groupingByConcurrent(row -> (String) row[0], Collectors.mapping(
                         row -> FilmMapper.entityToDTO((Film) row[1]), Collectors.toList())));
 
         List<FilmGroupedByCategoryResponse> groupedFilms = new ArrayList<>(groupedFilmsMap.size());
-        groupedFilmsMap.forEach((key, value) ->
-                groupedFilms.add(new FilmGroupedByCategoryResponse(key, value))
-        );
+        groupedFilmsMap.forEach((key, value) -> {
+            groupedFilms.add(new FilmGroupedByCategoryResponse(key, value));
+        });
 
         return new DataListResponse<>(groupedFilms, filmsPage.getTotalPages(), filmsPage.getTotalElements());
+    }
+
+    @Transactional
+    @Override
+    public DataListResponse<FilmGroupedByCategoryResponse> listBySaga() {
+        List<Object[]> filmsWithSaga = filmRepository.findFilmsWithSaga();
+
+        Map<String, List<FilmResponse>> groupedFilmsMap = filmsWithSaga
+                .stream().collect(Collectors.groupingByConcurrent(row -> (String) row[0], Collectors.mapping(
+                        row -> FilmMapper.entityToDTO((Film) row[1]), Collectors.toList())));
+
+        List<FilmGroupedByCategoryResponse> groupedFilms = new ArrayList<>();
+        groupedFilmsMap.forEach((saga, films) ->
+                groupedFilms.add(new FilmGroupedByCategoryResponse(saga, films))
+        );
+
+        return new DataListResponse<>(groupedFilms, 0, filmsWithSaga.size());
     }
 
     @Override

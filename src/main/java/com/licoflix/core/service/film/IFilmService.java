@@ -17,6 +17,9 @@ public interface IFilmService {
 
     DataListResponse<FilmGroupedByCategoryResponse> listByCategories(Integer page, Integer pageSize, String category);
 
+    @Transactional
+    DataListResponse<FilmGroupedByCategoryResponse> listBySaga();
+
     DataListResponse<CategoryResponse> listCategories();
 
     @Transactional

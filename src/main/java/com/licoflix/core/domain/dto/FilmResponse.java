@@ -15,6 +15,7 @@ public class FilmResponse {
     private int year;
     private Double imdb;
     private String cast;
+    private String saga;
     private String title;
     private String image;
     private Integer oscars;

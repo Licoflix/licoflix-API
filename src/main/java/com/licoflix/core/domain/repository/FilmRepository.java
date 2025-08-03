@@ -33,4 +33,7 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 
     @Query("SELECT f FROM Film f where f.title = :title")
     Optional<Film> findByTitle(String title);
+
+    @Query("SELECT f.saga, f FROM Film f WHERE f.saga IS NOT NULL ORDER BY f.year DESC, f.id DESC")
+    List<Object[]> findFilmsWithSaga();
 }
