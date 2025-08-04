@@ -40,6 +40,9 @@ public class Film extends AuditFields {
     @Column(name = "saga")
     private String saga;
 
+    @Column(name = "order_saga")
+    private Long orderSaga;
+
     @Column(name = "title", nullable = false)
     private String title;
 

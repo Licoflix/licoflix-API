@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,7 +48,7 @@ public class FilmService implements IFilmService {
         Sort.Direction sortDirection = Sort.Direction.fromString(StringUtils.isBlank(direction) ? "desc" : direction.toLowerCase());
         Sort sort;
         if (StringUtils.isBlank(orderBy)) {
-            sort = Sort.by(Sort.Order.desc("year"), Sort.Order.desc("id"));
+            sort = Sort.by(Sort.Order.asc("orderSaga"), Sort.Order.desc("year"), Sort.Order.desc("id"));
         } else {
             sort = Sort.by(new Sort.Order(sortDirection, validOrderBy));
         }
@@ -69,7 +66,8 @@ public class FilmService implements IFilmService {
         page = page != null && page > 0 ? page : 1;
         pageSize = pageSize != null && pageSize > 0 ? pageSize : 10;
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("year"), Sort.Order.desc("id")));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.asc("orderSaga"),
+                Sort.Order.desc("year"), Sort.Order.desc("id")));
         Page<Object[]> filmsPage = (category != null && !category.trim().isEmpty())
                 ? filmRepository.findFilmsWithCategoriesByCategory(category.trim(), pageable)
                 : filmRepository.findFilmsWithCategories(pageable);
@@ -96,8 +94,10 @@ public class FilmService implements IFilmService {
                         row -> FilmMapper.entityToDTO((Film) row[1]), Collectors.toList())));
 
         List<FilmGroupedByCategoryResponse> groupedFilms = new ArrayList<>();
-        groupedFilmsMap.forEach((saga, films) ->
-                groupedFilms.add(new FilmGroupedByCategoryResponse(saga, films))
+        groupedFilmsMap.forEach((saga, films) -> {
+                    films.sort(Comparator.comparing(FilmResponse::getOrderSaga, Comparator.nullsLast(Long::compareTo)));
+                    groupedFilms.add(new FilmGroupedByCategoryResponse(saga, films));
+                }
         );
 
         return new DataListResponse<>(groupedFilms, 0, filmsWithSaga.size());

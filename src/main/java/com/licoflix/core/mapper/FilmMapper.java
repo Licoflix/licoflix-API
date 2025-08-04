@@ -40,6 +40,7 @@ public class FilmMapper {
                 .duration(film.getDuration())
                 .createdIn(createdInFormatted)
                 .changedIn(changedInFormatted)
+                .orderSaga(film.getOrderSaga())
                 .producers(film.getProducers())
                 .directors(film.getDirectors())
                 .description(film.getDescription())
@@ -67,7 +68,6 @@ public class FilmMapper {
                 .image(imageBytes)
                 .age(filmRequest.getAge())
                 .cast(filmRequest.getCast())
-                .saga(filmRequest.getSaga())
                 .imdb(filmRequest.getImdb())
                 .year(filmRequest.getYear())
                 .background(backgroundBytes)
@@ -78,10 +78,12 @@ public class FilmMapper {
                 .duration(filmRequest.getDuration())
                 .directors(filmRequest.getDirectors())
                 .producers(filmRequest.getProducers())
+                .orderSaga(filmRequest.getOrderSaga())
                 .baftaAwards(filmRequest.getBaftaAwards())
                 .description(filmRequest.getDescription())
                 .goldenGlobes(filmRequest.getGoldenGlobes())
                 .originalTitle(filmRequest.getOriginalTitle())
+                .saga(filmRequest.getSaga().isEmpty() || filmRequest.getSaga().isBlank() ? null : filmRequest.getSaga())
                 .build();
 
         film.setCreatedBy(id);

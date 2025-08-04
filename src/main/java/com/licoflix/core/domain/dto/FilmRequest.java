@@ -31,6 +31,8 @@ public class FilmRequest {
 
     private String saga;
 
+    private Long orderSaga;
+
     @NotNull(message = "Film orignal title is required")
     private String originalTitle;
 

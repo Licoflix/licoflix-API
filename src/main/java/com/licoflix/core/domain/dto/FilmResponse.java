@@ -18,6 +18,7 @@ public class FilmResponse {
     private String saga;
     private String title;
     private String image;
+    private Long orderSaga;
     private Integer oscars;
     private String language;
     private String duration;
