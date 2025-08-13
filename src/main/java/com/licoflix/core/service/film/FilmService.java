@@ -125,7 +125,7 @@ public class FilmService implements IFilmService {
         List<String> categoryNames = filmRequest.getCategories();
         Film film = FilmMapper.requestToEntity(filmRequest, filmRequest.getImage(), filmRequest.getBackground(), userDetails.getId());
 
-        Optional<Film> filmFromDB = filmRepository.getByTitleAndYear(filmRequest.getTitle(), filmRequest.getYear());
+        Optional<Film> filmFromDB = filmRepository.findByTitle(filmRequest.getTitle());
         filmFromDB.ifPresent(db -> FilmMapper.setChangedInfo(db.getId(), film, userDetails.getId()));
 
         categories = categoryNames.stream().map(this::getCategory).toList();
