@@ -229,7 +229,7 @@ public class FilmService implements IFilmService {
     @Transactional
     public DataListResponse<FilmWatchingListResponse> listWatchingFilmList(String authorization, String timezone) throws Exception {
         UserDetailsResponse user = restService.getUserDetails(authorization, timezone);
-        List<FilmWatchingList> watching = filmWatchingRepository.findByUser(user.getId());
+        List<FilmWatchingList> watching = filmWatchingRepository.findByUser(user.getId(), Sort.by(Sort.Order.desc("id")));
 
         return new DataListResponse<>(FilmMapper.watchingListToDTO(watching), 1, watching.size());
     }
