@@ -48,7 +48,7 @@ public class FilmService implements IFilmService {
         Sort.Direction sortDirection = Sort.Direction.fromString(StringUtils.isBlank(direction) ? "desc" : direction.toLowerCase());
         Sort sort;
         if (StringUtils.isBlank(orderBy)) {
-            sort = Sort.by(Sort.Order.asc("orderSaga"), Sort.Order.desc("year"), Sort.Order.desc("id"));
+            sort = Sort.by(Sort.Order.desc("year"), Sort.Order.asc("orderSaga"), Sort.Order.desc("id"));
         } else {
             sort = Sort.by(new Sort.Order(sortDirection, validOrderBy));
         }
@@ -66,8 +66,8 @@ public class FilmService implements IFilmService {
         page = page != null && page > 0 ? page : 1;
         pageSize = pageSize != null && pageSize > 0 ? pageSize : 10;
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.asc("orderSaga"),
-                Sort.Order.desc("year"), Sort.Order.desc("id")));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("year"),
+                Sort.Order.asc("orderSaga"), Sort.Order.desc("id")));
         Page<Object[]> filmsPage = (category != null && !category.trim().isEmpty())
                 ? filmRepository.findFilmsWithCategoriesByCategory(category.trim(), pageable)
                 : filmRepository.findFilmsWithCategories(pageable);
