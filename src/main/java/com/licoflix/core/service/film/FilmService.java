@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +45,7 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
+    @Cacheable(value = "films-list", key = "#search + '_' + #orderBy + '_' + #direction + '_' + #page + '_' + #pageSize")
     public DataListResponse<FilmResponse> list(String search, String orderBy, String direction, Integer page, Integer pageSize) {
         String validOrderBy = StringUtils.isBlank(orderBy) ? "year" : orderBy;
         Sort.Direction sortDirection = Sort.Direction.fromString(StringUtils.isBlank(direction) ? "desc" : direction.toLowerCase());
@@ -62,6 +65,7 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
+    @Cacheable(value = "films-by-categories", key = "#page + '_' + #pageSize + '_' + (#category != null ? #category : 'all')")
     public DataListResponse<FilmGroupedByCategoryResponse> listByCategories(Integer page, Integer pageSize, String category) {
         page = page != null && page > 0 ? page : 1;
         pageSize = pageSize != null && pageSize > 0 ? pageSize : 10;
@@ -84,8 +88,9 @@ public class FilmService implements IFilmService {
         return new DataListResponse<>(groupedFilms, filmsPage.getTotalPages(), filmsPage.getTotalElements());
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Cacheable(value = "films-saga")
     public DataListResponse<FilmGroupedByCategoryResponse> listBySaga() {
         List<Object[]> filmsWithSaga = filmRepository.findFilmsWithSaga();
 
@@ -104,6 +109,7 @@ public class FilmService implements IFilmService {
     }
 
     @Override
+    @Cacheable(value = "films-categories")
     public DataListResponse<CategoryResponse> listCategories() {
         DataListResponse<CategoryResponse> response = new DataListResponse<>();
 
@@ -117,6 +123,7 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"films-list", "films-by-categories", "films-saga", "films-xls", "films-categories"}, allEntries = true)
     public DataResponse<FilmResponse> save(FilmRequest filmRequest, String authorization, String timezone) throws IOException {
         List<Category> categories;
 
@@ -151,6 +158,7 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"films-list", "films-by-categories", "films-saga", "films-xls"}, allEntries = true)
     public void delete(Long id) throws Exception {
         Film film = filmRepository.findById(id).orElseThrow(() -> new Exception("Film with ID " + id + " not found"));
         deleteFilmFiles(film.getTitle());
