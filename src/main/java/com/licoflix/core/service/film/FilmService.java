@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -123,7 +122,6 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"films-list", "films-by-categories", "films-saga", "films-xls", "films-categories"}, allEntries = true)
     public DataResponse<FilmResponse> save(FilmRequest filmRequest, String authorization, String timezone) throws IOException {
         List<Category> categories;
 
@@ -158,7 +156,6 @@ public class FilmService implements IFilmService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"films-list", "films-by-categories", "films-saga", "films-xls"}, allEntries = true)
     public void delete(Long id) throws Exception {
         Film film = filmRepository.findById(id).orElseThrow(() -> new Exception("Film with ID " + id + " not found"));
         deleteFilmFiles(film.getTitle());

@@ -1,6 +1,7 @@
 package com.licoflix.core.domain.repository;
 
 import com.licoflix.core.domain.model.film.Film;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,11 +18,11 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
     Page<Film> findAll(Specification<Film> filmSpecification, Pageable pageable);
 
     @Query(value = "SELECT f.title, STRING_AGG(c.name, ', ') AS categories, f.year, f.duration, f.directors, f.producers, f.film_cast " +
-            "FROM tb_film f " +
-            "JOIN tb_film_category fc ON f.id = fc.film_id " +
-            "JOIN tb_category c ON fc.category_id = c.id " +
-            "GROUP BY f.id " +
-            "ORDER BY f.title", nativeQuery = true)
+                   "FROM tb_film f " +
+                   "JOIN tb_film_category fc ON f.id = fc.film_id " +
+                   "JOIN tb_category c ON fc.category_id = c.id " +
+                   "GROUP BY f.id " +
+                   "ORDER BY f.title", nativeQuery = true)
     List<String[]> findAllForXLS();
 
     @Query("SELECT c.name, f FROM Film f JOIN f.categories c")
@@ -35,4 +36,12 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 
     @Query("SELECT f.saga, f FROM Film f WHERE f.saga IS NOT NULL ORDER BY f.year DESC, f.id DESC")
     List<Object[]> findFilmsWithSaga();
+
+    @Override
+    @CacheEvict(value = {"films-list", "films-by-categories", "films-saga", "films-xls", "films-by-title"}, allEntries = true)
+    <S extends Film> S save(S entity);
+
+    @Override
+    @CacheEvict(value = {"films-list", "films-by-categories", "films-saga", "films-xls", "films-by-title"}, allEntries = true)
+    void delete(Film entity);
 }
