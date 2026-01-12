@@ -88,8 +88,8 @@ public class FilmService implements IFilmService {
     }
 
     @Override
-    @Transactional
-    @Cacheable(value = "films-saga")
+    @Transactional(readOnly = true)
+    @Cacheable(value = "films-saga", key = "'all'", sync = true)
     public DataListResponse<FilmGroupedByCategoryResponse> listBySaga() {
         List<Object[]> filmsWithSaga = filmRepository.findFilmsWithSaga();
 
